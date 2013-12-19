@@ -1,0 +1,49 @@
+#include "Ethernet.h"
+#include "SPI.h"
+#include "Arduino.h"
+#include "pwrMeter.h"
+#include "lwSimpleHTTPClient.h"
+//#include "SoftwareSerial.h"
+#include "lwPowermeterOverHTTP.h"
+
+#define userkey "029b3884b91e4d00b514158ba1e2ac57"
+#define gateway "01"
+
+//SoftwareSerial mySerial(2, 3);
+pwrMeter meter;
+lwPowermeterOverHTTP *hclient;
+
+void setup()
+{
+    Serial.begin(4800);
+    //meter.begin(&mySerial, 4800);
+    meter.begin(&Serial);
+    hclient = new lwPowermeterOverHTTP(userkey, gateway);
+    hclient->initialize();
+}
+
+void loop()
+{
+    if (meter.available(2) > 0)  // 读模块2的缓冲区
+        {
+            int Watt = 0;
+            float Amp = 0;
+            float Kwh = 0;
+            float Pf = 0;
+            float Voltage = 0;
+
+            if (meter.readData(Watt, Amp, Kwh, Pf, Voltage)) // 一次性读入所有的电量数据
+                {
+            hclient->post("YDL", Kwh);
+            hclient->post("GL", Watt);
+            hclient->post("DL", Amp);
+            hclient->post("DY", Voltage);
+            hclient->post("GLYS", Pf);
+
+                    hclient->postBatchPowerInfo(Watt,Amp,Kwh, Pf, Voltage);
+
+                }
+        }
+
+    delay(12000);
+}

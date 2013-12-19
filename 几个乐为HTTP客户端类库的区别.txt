@@ -1,0 +1,19 @@
+根据不同的应用场合需求，做了几个乐为http的客户端类库
+
+lwGenericClient------------乐为物联网服务接口
+                           实现了IPOST
+
+lwHTTPClientLite-----------实现lwGenericClient接口、IGET接口
+
+lwHTTPClient---------------继承lwHTTPClientLite
+
+上面三个类之间存在继承、实现的关系
+
+
+
+
+下面的lwSimpleHTTPClient则是全新编写的，为了配合电量模块在328P芯片上使用，受内存小的限制，所以取消了很多重载方法，已经不常用的方法。
+
+lwSimpleHTTPClient---------配合电量模块使用的乐联HTTP协议精简版，第一版只支持单个数据的上传，后面版本也支持批量上传
+
+lwPowermeterOverHTTP-------继承自lwSimpleHTTPClient，增加批量上传功能。
